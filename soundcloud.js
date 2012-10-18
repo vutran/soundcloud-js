@@ -110,9 +110,9 @@ var soundcloud = {
 		index : 0,			// The current index of of soundcloud.current.sound in soundcloud.smObjects
 	},
 	eq : {
-		left : 0,			// left wave form data
-		right : 0,			// right wave form data
-		average : 0,		// the current average wave length
+		left : 0,			// left eq form data
+		right : 0,			// right eq form data
+		average : 0,		// the current average eq length
 		scale : 255			// max number of the equalizer
 	},
 	smObjects : [],			// An array containing SMSound objects
@@ -176,7 +176,9 @@ var soundcloud = {
 	    		url : soundcloud.path + '/soundmanager/swf/soundmanager2_flash9.swf',
 	    		flashVersion : 9,
 	    		flash9Options : {
-	    			useWaveFormData : true
+	    			useWaveformData : true,
+	    			useEQData : true,
+	    			usePeakData : true
 	    		},
 	    		useHTML5Audio : false,
 	    		preferFlash : true,
@@ -308,7 +310,6 @@ var soundcloud = {
 					// Set the anchor if available
 					var theAnchor = jQuery('.soundcloud-play-set[data-set-id=' + setID + '][data-dom-id=' + domID + ']');
 					soundcloud.current.anchor = theAnchor;
-					
 					var index = -1;
 					jQuery.each(soundcloud.current.set.tracks, function(idx, el) {
 						if(el.id == trackID) {
@@ -508,8 +509,8 @@ var soundcloud = {
 	 * @return void
 	 */
 	updateEqualizer : function() {
-		soundcloud.eq.left = Math.abs(soundcloud.current.sound.waveformData.left[0] * soundcloud.eq.scale);
-		soundcloud.eq.right = Math.abs(soundcloud.current.sound.waveformData.right[0] * soundcloud.eq.scale);
+		soundcloud.eq.left = Math.abs(soundcloud.current.sound.eqData.left[0] * soundcloud.eq.scale);
+		soundcloud.eq.right = Math.abs(soundcloud.current.sound.eqData.right[0] * soundcloud.eq.scale);
 		soundcloud.eq.average = (soundcloud.eq.left + soundcloud.eq.right) / 2;
 	},
 	/**
