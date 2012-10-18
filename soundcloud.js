@@ -109,6 +109,11 @@ var soundcloud = {
 		sound : false,		// The current SMSound object
 		index : 0,			// The current index of of soundcloud.current.sound in soundcloud.smObjects
 	},
+	peakData : {
+		left : 0,			// left peak data
+		right : 0,			// right peak data
+		average : 0			// average peak data
+	},
 	eq : {
 		left : 0,			// left eq form data
 		right : 0,			// right eq form data
@@ -514,6 +519,16 @@ var soundcloud = {
 		soundcloud.eq.average = (soundcloud.eq.left + soundcloud.eq.right) / 2;
 	},
 	/**
+	 * Updates the peak data data (volume)
+	 *
+	 * @return void
+	 */
+	updatePeakData : function() {
+		soundcloud.peakData.left = soundcloud.current.sound.peakData.left;
+		soundcloud.peakData.right = soundcloud.current.sound.peakData.right;
+		soundcloud.peakData.average = (soundcloud.peakData.left + soundcloud.peakData.right) / 2;
+	},
+	/**
 	 * Converts a seconds string into the format of XX:XX
 	 *
 	 * @param int duration		Seconds
@@ -567,8 +582,12 @@ var soundcloud = {
 			url : stream_url,
 			whileplaying : function() {
 				var sound = this;
+				// Update the progress bar
 				soundcloud.updateProgressBar();
+				// Update the equalizer
 				soundcloud.updateEqualizer();
+				// Update the peak data
+				soundcloud.updatePeakData();
 				// Call each callback
 				jQuery.each(soundcloud.callbacks.whileplaying, function(idx, callback) {
 					if(typeof callback == 'function') { callback.call(sound); }
@@ -579,6 +598,7 @@ var soundcloud = {
 				soundcloud.conditionals.is_playing = true;
 			},
 			onresume : function() {
+				// Actually reload the track and the position
 				soundcloud.conditionals.is_playing = true;
 			},
 			onstop : function() {
