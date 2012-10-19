@@ -37,22 +37,49 @@ HTML DOM and CSS Controld
 ----------------------------------
 
 ##Basic Player Controls
-.soundcloud-is-playing						This class is appended to the anchor that is currently playing the music
-.soundcloud-play-set						This class handles the playing/pausing of a set player
+
+**.soundcloud-is-playing**
+This class is appended to the anchor that is currently playing the music.
+
+**.soundcloud-play-set**
+This class handles the playing/pausing of a set player.
+####Required Attributes
 * data-set-id
 * data-dom-id
-.soundcloud-play-track						This class handles the playing/pausing of a track in a set
+
+**.soundcloud-play-track**
+This class handles the playing/pausing of a track in a set.
+####Required Attributes
 * data-set-id
 * data-track-id
 * data-dom-id
-.soundcloud-prev							This class handles the previous track button
-.soundcloud-next							This class handles the next track button
+
+**.soundcloud-prev**
+This class handles the previous track button.
+
+**.soundcloud-next**
+This class handles the next track button.
+
+##Playlists
+
+**.soundcloud-playlists**
+Gets auto-populated with tracks when a set is loaded.
 
 ##Progress Bars
-.soundcloud-progres							The progress bar parent
-.soundcloud-progress-position				The current progress bar position (srubber)
-.soundcloud-progress-bar					The current progress bar fillter
+
+**.soundcloud-progres**
+The progress bar parent.
+
+**.soundcloud-progress-position**
+The current progress bar position (scrubber).
+
+**.soundcloud-progress-bar**
+The current progress bar filter.
 
 ##Duration Timers
-.soundcloud-duration-elapsed				The currently elapsed time
-.soundcloud-duration-remaining				The currently remaining time
+
+**.soundcloud-duration-elapsed**
+The currently elapsed time.
+
+**.soundcloud-duration-remaining**
+The currently remaining time.

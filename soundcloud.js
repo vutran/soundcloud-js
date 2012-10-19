@@ -377,6 +377,8 @@ var soundcloud = {
 		onLoadSetData : function(data, callback) {
 			// Set the current set
 			soundcloud.current.set = data;
+			// Populate list
+			soundcloud.populatePlaylist(data);
 			// Loop through each track and load the tracks
 			jQuery.each(soundcloud.current.set.tracks, function(idx, track) {
 				soundcloud.load(track);
@@ -386,6 +388,36 @@ var soundcloud = {
 				}
 			});
 		},
+	},
+	/**
+	 * Populates the HTML playlist for the set if available
+	 *
+	 * @param object set				The SoundCloud set object
+	 * @return void
+	 */
+	populatePlaylist : function(set) {
+		var theParent = jQuery('.' + soundcloud.getCurrentDomId());
+		var playList = jQuery('.soundcloud-playlist', theParent);
+		if(playList.length) {
+			jQuery.each(set.tracks, function(idx, track) {
+				var item = jQuery('<li />');
+				var anchor = jQuery('<a />');
+				var title = jQuery('<span />');
+				anchor
+					.addClass('soundcloud-play-track')
+					.attr('data-set-id', set.id)
+					.attr('data-track-id', track.id)
+					.attr('data-dom-id', soundcloud.getCurrentDomId())
+					.attr('href', '#')
+					.appendTo(item);
+				title
+					.html(track.title)
+					.appendTo(item);
+				item
+					.addClass('soundcloud-playlist-item')
+					.appendTo(playList);
+			});
+		}
 	},
 	/** 
 	 * Checks to see if the music player is currently playing or not
