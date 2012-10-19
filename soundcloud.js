@@ -13,11 +13,18 @@
  *
  * <code>
  * jQuery(function() {
- *  soundcloud.init(site.opts.templateUrl+'/js/soundcloud', 'adcc1dfaf678b58c7171d2c539635c16');
+ *  soundcloud.init({
+ *   path : '/path/to/soundcloud/folder/',
+ *   consumer_key : 'adcc1dfaf678b58c7171d2c539635c16'
+ *   preload : {
+ *    jquery : true,
+ *    jqueryUI : true
+ *   }
+ *  });
  * });
  * </code>
  *
- * #CSS Binded Elements
+ * ##Basic Player Controls
  * * .soundcloud-is-playing						This class is appended to the anchor that is currently playing the music
  * * .soundcloud-play-set						This class handles the playing/pausing of a set player
  * * * data-set-id
@@ -28,12 +35,15 @@
  * * * data-dom-id
  * * .soundcloud-prev							This class handles the previous track button
  * * .soundcloud-next							This class handles the next track button
+ *
+ * ##Progress Bars
  * * .soundcloud-progres						The progress bar parent
  * * .soundcloud-progress-position				The current progress bar position (srubber)
  * * .soundcloud-progress-bar					The current progress bar fillter
- * * .soundcloud-progress-duration				The progress bar duration parent
- * * .soundcloud-progress-duration-elapsed		The currently elapsed time
- * * .soundcloud-progress-duration-remaining	The currently remaining time
+ *
+ * ##Duration Timers
+ * * .soundcloud-duration-elapsed				The currently elapsed time
+ * * .soundcloud-duration-remaining				The currently remaining time
  *
  */
 var soundcloud = {
@@ -43,6 +53,13 @@ var soundcloud = {
 	 * @param string path
 	 */
 	path : false,
+	/**
+	 * Preload libraries?
+	 */
+	preload : {
+		jquery : false,
+		jqueryUI : false
+	},
 	/**
 	 * Internal API properties
 	 */
@@ -130,21 +147,70 @@ var soundcloud = {
 		 */
 		whileplaying : []
 	},
+	intervals : {
+		jQueryLoader : false
+	},
 	/**
 	 * Initializes the music player
 	 *
-	 * @param string path			The path of the package folder
-	 * @param string consumer_key	The API key
+	 * #Parameters
+	 * * string path			The path of the package folder
+	 * * string consumer_key	The API key
+	 *
+	 * @param object opts		A list of parameters (see above)
 	 */
-	init : function(path, consumer_key) {
+	init : function(opts) {
 
-		soundcloud.path = path;
-		soundcloud.api.consumer_key = consumer_key;
+		// Set options
+		soundcloud.path = opts.path;
+		soundcloud.api.consumer_key = opts.consumer_key;
+		soundcloud.preload = {
+			jquery : (typeof opts.preload != 'undefined' && typeof opts.preload.jquery != 'undefined') ? opts.preload.jquery : false,
+			jqueryUI : (typeof opts.preload != 'undefined' && typeof opts.preload.jqueryUI != 'undefined') ? opts.preload.jqueryUI : false
+		};
 
-		soundcloud.sm2.init();
+		// Set the protocol
+		soundcloud.protocol = (window.location.protocol == 'https:' || window.location.protocol == 'http:') ? window.location.protocol : 'http:';
 
-		// Register SoundCloud events
-		soundcloud.registerEvents();
+		// Load jQuery/jQuery UI if necessary
+		if(soundcloud.preload.jquery) { soundcloud.asyncLoad('jquery', soundcloud.protocol + '//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js'); }
+		if(soundcloud.preload.jqueryUI) { soundcloud.asyncLoad('jquery-ui', soundcloud.protocol + '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/jquery-ui.min.js'); }
+
+		soundcloud.intervals.jQueryLoader = setInterval(soundcloud.onjQueryLoader, 500);
+	},
+	/**
+	 * Interval callback for jQuery loader
+	 *
+	 * @return void
+	 */
+	onjQueryLoader : function() {
+		if(typeof jQuery != 'undefined') {
+			// Initialize SoundManager 2
+			soundcloud.sm2.init();
+			// Register SoundCloud events
+			soundcloud.registerEvents();
+			// Init scrubber
+			soundcloud.scrubber.init();
+			clearInterval(soundcloud.intervals.jQueryLoader);
+		}
+	},
+	/**
+	 * Asynchronously load a JS library file
+	 *
+	 * @param string name
+	 * @param string url
+	 */
+	asyncLoad : function(name, url, callback) {
+		(function() {
+		    var s = document.createElement('script');
+		    s.type = 'text/javascript';
+		    s.async = true;
+		    s.id = 'soundcloud-asyncLoad-' + name;
+		    s.src = url;
+		    var x = document.getElementsByTagName('head')[0];
+		    x.appendChild(s);
+		    s.onload = callback;
+	    })();
 	},
 	/**
 	 * SoundManager2 Handlers
@@ -159,22 +225,14 @@ var soundcloud = {
 		 * @return void
 		 */
 		init : function() {
-			(function() {
-			    var s = document.createElement('script');
-			    s.type = 'text/javascript';
-			    s.async = true;
-			    s.src = soundcloud.path + '/soundmanager/script/soundmanager2-nodebug-jsmin.js';
-			    var x = document.getElementsByTagName('script')[0];
-			    x.parentNode.insertBefore(s, x);
-			    s.onload = function() {
-					soundcloud.sm2.intervals.loader = setInterval(function() {
-						if(typeof soundManager == 'object') {
-							soundcloud.sm2.setup();
-							clearInterval(soundcloud.sm2.intervals.loader);
-						}
-					}, 500);
-			    };
-		    })();
+			soundcloud.asyncLoad('soundmanager2', soundcloud.path + '/soundmanager/script/soundmanager2-nodebug-jsmin.js', function() {
+				soundcloud.sm2.intervals.loader = setInterval(function() {
+					if(typeof soundManager == 'object') {
+						soundcloud.sm2.setup();
+						clearInterval(soundcloud.sm2.intervals.loader);
+					}
+				}, 500);
+			});
 		},
 		setup : function() {
 	    	soundManager.setup({
@@ -203,6 +261,7 @@ var soundcloud = {
 				var theAnchor = jQuery('.soundcloud-play-set[data-set-id=' + setID + '][data-dom-id=' + domID + ']');
 				// Make is playing
 				theAnchor.addClass('soundcloud-is-playing');
+				theAnchor.html('Pause');
 				// Update the current anchor to the found one
 				soundcloud.current.anchor = theAnchor;
 				// Updat track listings
@@ -276,6 +335,7 @@ var soundcloud = {
 			soundcloud.current.track = soundcloud.current.sound.track;
 			// Set the current anchor
 			soundcloud.current.anchor.addClass('soundcloud-is-playing');
+			soundcloud.current.anchor.html('Pause');
 			// Play the first song in the loaded set
 			soundcloud.current.sound.play();
 			// Update track listings
@@ -427,6 +487,7 @@ var soundcloud = {
 		soundcloud.current.index = index;
 		// Set the current anchor
 		soundcloud.current.anchor.addClass('soundcloud-is-playing');
+		soundcloud.current.anchor.html('Pause');
 		// Set the sound
 		soundcloud.current.sound = soundcloud.smObjects[soundcloud.current.index];
 		// Set the track
@@ -465,12 +526,41 @@ var soundcloud = {
 
 			// Add is playing to active tracks
 			activeTracks.addClass('soundcloud-is-playing');
+			activeTracks.html('Pause');
 			inactiveTracks.removeClass('soundcloud-is-playing');
+			inactiveTracks.html('Play');
 		}
 		else {
 			var allTracks = jQuery('.soundcloud-play-track');
 			allTracks.removeClass('soundcloud-is-playing');
+			allTracks.html('Play');
 		}
+	},
+	/**
+	 * Update the player title
+	 *
+	 * @return void
+	 */
+	updateTitle : function() {
+		var theParent = jQuery('.' + soundcloud.getCurrentDomId());
+		// Update title
+		var title = jQuery('.soundcloud-title', theParent);
+		title.html(soundcloud.current.track.title);
+	},
+	/**
+	 * Updates the duration timers
+	 *
+	 * @return void
+	 */
+	updateDuration : function() {
+		var theParent = jQuery('.' + soundcloud.getCurrentDomId());
+		// Update timer
+		var elapsed = soundcloud.parseDuration(soundcloud.current.sound.position);
+		var remaining = soundcloud.parseDuration(soundcloud.current.sound.durationEstimate - soundcloud.current.sound.position);
+		var progressElapsed = jQuery('.soundcloud-duration-elapsed', theParent);
+		var progressRemaining = jQuery('.soundcloud-duration-remaining', theParent);
+		progressElapsed.html(elapsed);
+		progressRemaining.html(remaining);
 	},
 	/**
 	 * Updates the progress bar
@@ -489,24 +579,15 @@ var soundcloud = {
 		// Update position (if not scrubbing)
 		if(!soundcloud.scrubber.isScrubbing) {
 			var progressPosition = jQuery('.soundcloud-progress-position', progressParent);
+			var endWidth = fullWidth - progressPosition.width();
+			if(leftPos<0) { leftPos = 0; }
+			if(leftPos>endWidth) { leftPos = endWidth; }
 			progressPosition.css('left', leftPos);
 		}
 
 		// Update bar
 		var progressBar = jQuery('.soundcloud-progress-bar', progressParent);
 		progressBar.css('width', leftPos);
-		
-		// Update timer
-		var elapsed = soundcloud.parseDuration(soundcloud.current.sound.position);
-		var remaining = soundcloud.parseDuration(soundcloud.current.sound.durationEstimate - soundcloud.current.sound.position);
-		var progressElapsed = jQuery('.soundcloud-progress-duration-elapsed', progressParent);
-		var progressRemaining = jQuery('.soundcloud-progress-duration-remaining', progressParent);
-		progressElapsed.html(elapsed);
-		progressRemaining.html(remaining);
-		
-		// Update title
-		var title = jQuery('.soundcloud-title', theParent);
-		title.html(soundcloud.current.track.title);
 	},
 	/**
 	 * Updates the equalizer wave data
@@ -582,6 +663,10 @@ var soundcloud = {
 			url : stream_url,
 			whileplaying : function() {
 				var sound = this;
+				// Update the player title
+				soundcloud.updateTitle();
+				// Update the duration timers
+				soundcloud.updateDuration();
 				// Update the progress bar
 				soundcloud.updateProgressBar();
 				// Update the equalizer
@@ -609,6 +694,7 @@ var soundcloud = {
 			},
 			onfinish : function() {
 				soundcloud.conditionals.is_playing = false;
+				soundcloud.stopAll();
 			}
 		});
 
@@ -641,6 +727,7 @@ var soundcloud = {
 		soundcloud.current.sound.resume();
 		// Resumes the anchor
 		soundcloud.current.anchor.addClass('soundcloud-is-playing');
+		soundcloud.current.anchor.html('Pause');
 		// Update track listings
 		soundcloud.updateTrackListings();
 	},
@@ -670,6 +757,7 @@ var soundcloud = {
 	stopAll : function() {
 		// Removes all classes
 		jQuery('.soundcloud-is-playing').removeClass('soundcloud-is-playing');
+		soundcloud.current.anchor.html('Play');
 		// Stops SM2
 		soundManager.stopAll();
 	},
