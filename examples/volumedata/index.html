@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Sample Set Player</title>
+<script type="text/javascript" language="javascript" src="../../soundcloud.js"></script>
+<script type="text/javascript" language="javascript">
+
+(function() {
+	soundcloud.init({
+		path : '../../',
+		consumer_key : 'adcc1dfaf678b58c7171d2c539635c16',
+		preload : {
+			jquery : true,
+			jqueryUI : true
+		}
+	});
+	
+	
+	soundcloud.addCallback('whileplaying', function(sound) {
+		jQuery('.soundcloud-volume-left').height(soundcloud.peakData.left * 200);
+		jQuery('.soundcloud-volume-right').height(soundcloud.peakData.right * 200);
+	});
+	
+})();
+
+</script>
+<style type="text/css">
+.soundcloud-progress {
+	position: relative;
+	width: 300px;
+	height: 30px;
+	border:1px solid #000;
+}
+	.soundcloud-progress-position {
+		position: absolute;
+		left: 0px;
+		top: 0px;
+		height: 30px;
+		width: 5px;
+		z-index: 2;
+		background-color: #3d3d3d;
+	}
+	.soundcloud-progress-bar {
+		position:absolute;
+		top: 0px;
+		left: 0px;
+		height: 30px;
+		width: 0px;
+		z-index: 1;
+		background-color: #dedede;
+	}
+	.soundcloud-volumebar {
+	}
+		.soundcloud-volume-left {
+			float: left;
+			margin-right: 15px;
+			width: 25px;
+			background-color: #ff0000;
+		}
+		.soundcloud-volume-right {
+			float: left;
+			width: 25px;
+			background-color: #0000ff;
+		}
+	}
+
+</style>
+</head>
+
+<body>
+
+
+
+<div class="soundcloud-set-player">
+
+	<button class="soundcloud-prev">Prev</button>
+	<button class="soundcloud-play-set" data-set-id="1738096" data-dom-id="soundcloud-set-player">Play</button>
+	<button class="soundcloud-next">Next</button>
+
+	<div class="soundcloud-title"></div>
+	
+	<div>
+		<span class="soundcloud-duration-elapsed">0:00</span> // <span class="soundcloud-duration-remaining">0:00</span>
+	</div>
+	
+	
+	<div class="soundcloud-progress">
+		<div class="soundcloud-progress-position"></div>
+		<div class="soundcloud-progress-bar"></div>
+	</div>
+	
+	<div class="soundcloud-volumebar">
+		<div class="soundcloud-volume-left"></div>
+		<div class="soundcloud-volume-right"></div>
+	</div>
+
+</div>
+
+
+
+</body>
+
+</html>
