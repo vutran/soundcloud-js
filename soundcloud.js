@@ -134,8 +134,8 @@ var soundcloud = {
 		soundcloud.protocol = (window.location.protocol == 'https:' || window.location.protocol == 'http:') ? window.location.protocol : 'http:';
 
 		// Load jQuery/jQuery UI if necessary
-		if(soundcloud.preload.jquery) { soundcloud.asyncLoad('jquery', soundcloud.protocol + '//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js'); }
-		if(soundcloud.preload.jqueryUI) { soundcloud.asyncLoad('jquery-ui', soundcloud.protocol + '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/jquery-ui.min.js'); }
+		if(soundcloud.preload.jquery) { soundcloud.asyncLoad('jquery', soundcloud.protocol + '//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js'); }
+		if(soundcloud.preload.jqueryUI) { soundcloud.asyncLoad('jquery-ui', soundcloud.protocol + '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js'); }
 
 		soundcloud.intervals.jQueryLoader = setInterval(soundcloud.onjQueryLoader, 500);
 	},
@@ -186,7 +186,7 @@ var soundcloud = {
 		 * @return void
 		 */
 		init : function() {
-			soundcloud.asyncLoad('soundmanager2', soundcloud.path + '/soundmanager/script/soundmanager2-nodebug-jsmin.js', function() {
+			soundcloud.asyncLoad('soundmanager2', soundcloud.path + '/soundmanager/script/soundmanager2-jsmin.js', function() {
 				soundcloud.sm2.intervals.loader = setInterval(function() {
 					if(typeof soundManager == 'object') {
 						soundcloud.sm2.setup();
@@ -197,7 +197,7 @@ var soundcloud = {
 		},
 		setup : function() {
 	    	soundManager.setup({
-	    		url : soundcloud.path + '/soundmanager/swf/soundmanager2_flash9.swf',
+	    		url : soundcloud.path + '/soundmanager/swf/soundmanager2_flash9_debug.swf',
 	    		flashVersion : 9,
 	    		flash9Options : {
 	    			useWaveformData : true,
@@ -287,7 +287,12 @@ var soundcloud = {
 				}
 			}
 		},
-		onClickPlaySetLoaded : function(e) {
+		/**
+		 * Onclick callback when a set play button is clicked and loaded
+		 *
+		 * @param object data
+		 */
+		onClickPlaySetLoaded : function(data) {
 			// Stops all current sound
 			soundcloud.stopAll();
 			// Set the current sound
@@ -693,6 +698,7 @@ var soundcloud = {
 
 		// Extend the SMSound object
 		sound.track = track;
+
 
 		// Append to global smObjects array
 		soundcloud.smObjects.push(sound);
