@@ -117,6 +117,7 @@ var soundcloud = {
 	 * #Parameters
 	 * * string path			The path of the package folder
 	 * * string consumer_key	The API key
+	 * * string type			(default: html5) Enumeration: 'html5', 'flash'
 	 *
 	 * @param object opts		A list of parameters (see above)
 	 */
@@ -129,6 +130,8 @@ var soundcloud = {
 			jquery : (typeof opts.preload != 'undefined' && typeof opts.preload.jquery != 'undefined') ? opts.preload.jquery : false,
 			jqueryUI : (typeof opts.preload != 'undefined' && typeof opts.preload.jqueryUI != 'undefined') ? opts.preload.jqueryUI : false
 		};
+		// Set the audio API type (see top)
+		soundcloud.type = opts.type;
 
 		// Set the protocol
 		soundcloud.protocol = (window.location.protocol == 'https:' || window.location.protocol == 'http:') ? window.location.protocol : 'http:';
@@ -196,19 +199,31 @@ var soundcloud = {
 			});
 		},
 		setup : function() {
-	    	soundManager.setup({
+			var sm2Params = {
 	    		url : soundcloud.path + '/soundmanager/swf/soundmanager2_flash9_debug.swf',
-	    		flashVersion : 9,
-	    		flash9Options : {
-	    			useWaveformData : true,
-	    			useEQData : true,
-	    			usePeakData : true
-	    		},
-	    		useHTML5Audio : false,
-	    		preferFlash : true,
-	    		debugMode : false,
-	    		debugFlash : false
-	    	});
+	    		debugMode : true,
+	    		debugFlash : false,
+			};
+
+			switch(soundcloud.type) {
+				case 'html5':
+				default:
+					sm2Params.useHTML5Audio = true;
+		    		sm2Params.preferFlash = false;
+					break;
+				case 'flash':
+					sm2Params.useHTML5Audio = false;
+		    		sm2Params.preferFlash = true;
+		    		sm2Params.flashVersion = 9,
+		    		sm2Params.flash9Options = {
+		    			useWaveformData : true,
+		    			useEQData : true,
+		    			usePeakData : true
+		    		};
+					break;
+			}
+			console.log(sm2Params);
+	    	soundManager.setup(sm2Params);
 		}
 	},
 	reinitialize : function() {
