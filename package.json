@@ -1,0 +1,27 @@
+{
+  "name": "soundcloud-js",
+  "description": "Create a custom SoundCloud music player",
+  "homepage": "https://github.com/vutran/soundcloud-js/",
+  "keywords": [
+    "audio",
+    "music",
+    "soundcloud",
+    "html5"
+  ],
+  "author": "Vu Tran <vu@vu-tran.com>",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vutran/soundcloud-js.git"
+  },
+  "main": "build/soundcloud.min.js",
+  "version": "0.2.0",
+  "readmeFilename": "README.md",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-uglify": "~0.2.4",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-copy": "~0.4.1"
+  }
+}

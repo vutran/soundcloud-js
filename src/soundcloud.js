@@ -1,12 +1,3 @@
-/**
- * SoundCloud JS
- *
- * @package SoundCloud
- * @link https://github.com/vutran/soundcloud-js
- * @author Vu Tran <vu@vu-tran.com>
- * @copyright 2012 Vu Tran
- * @version 1.0.2012181814
- */
 var soundcloud = {
 	/**
 	 * The path to the JS folder
@@ -141,6 +132,9 @@ var soundcloud = {
 		if(soundcloud.preload.jqueryUI) { soundcloud.asyncLoad('jquery-ui', soundcloud.protocol + '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js'); }
 
 		soundcloud.intervals.jQueryLoader = setInterval(soundcloud.onjQueryLoader, 500);
+
+		// Initialize SoundManager 2
+		soundcloud.sm2.init();
 	},
 	/**
 	 * Interval callback for jQuery loader
@@ -149,8 +143,6 @@ var soundcloud = {
 	 */
 	onjQueryLoader : function() {
 		if(typeof jQuery != 'undefined') {
-			// Initialize SoundManager 2
-			soundcloud.sm2.init();
 			// Register SoundCloud events
 			soundcloud.registerEvents();
 			// Init scrubber
@@ -189,18 +181,11 @@ var soundcloud = {
 		 * @return void
 		 */
 		init : function() {
-			soundcloud.asyncLoad('soundmanager2', soundcloud.path + '/soundmanager/script/soundmanager2-jsmin.js', function() {
-				soundcloud.sm2.intervals.loader = setInterval(function() {
-					if(typeof soundManager == 'object') {
-						soundcloud.sm2.setup();
-						clearInterval(soundcloud.sm2.intervals.loader);
-					}
-				}, 500);
-			});
+			soundcloud.sm2.setup();
 		},
 		setup : function() {
 			var sm2Params = {
-	    		url : soundcloud.path + '/soundmanager/swf/soundmanager2_flash9_debug.swf',
+	    		url : soundcloud.path.replace(/\/+$/, ''),
 	    		debugMode : true,
 	    		debugFlash : false,
 			};
@@ -222,8 +207,7 @@ var soundcloud = {
 		    		};
 					break;
 			}
-			console.log(sm2Params);
-	    	soundManager.setup(sm2Params);
+    	soundManager.setup(sm2Params);
 		}
 	},
 	reinitialize : function() {

@@ -1,6 +1,6 @@
 # SoundCloud JS
 
-Handles the SoundCloud music player
+Create a custom SoundCloud music player
 
 ## Requirements
 * jQuery
