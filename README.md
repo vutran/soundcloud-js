@@ -1,24 +1,17 @@
-SoundCloud JS
-
-==================================
+# SoundCloud JS
 
 Handles the SoundCloud music player
-----------------------------------
 
-
-Requirements
-----------------------------------
+## Requirements
 * jQuery
 * jQuery UI
 * SoundManager 2
 
-Instructions
-----------------------------------
+## Instructions
 
-Simply enqueue soundcloud.js into your website's HTML <head> tag and call soundcloud.init() inside a jQuery document ready
+Simply enqueue `soundcloud.js` into your website's HTML `<head>` tag and call `soundcloud.init()` inside a jQuery document ready callback.
 
-Example Initialization
-----------------------------------
+## Example Initialization
 
     jQuery(function() {
         soundcloud.init({
@@ -31,74 +24,82 @@ Example Initialization
         });
     });
 
+# HTML DOM and CSS Controls
 
+## Basic Player Controls
 
-HTML DOM and CSS Controld
-----------------------------------
-
-##Basic Player Controls
-
-**.soundcloud-is-playing**
+### `.soundcloud-is-playing`
 
 This class is appended to the anchor that is currently playing the music.
 
-**.soundcloud-play-set**
+### `.soundcloud-play-set`
 
 Plays a SoundCloud set.
 
-####Required Attributes
-* data-set-id
-* data-dom-id
+#### Data Attributes
+| Name | Type | Description | Required? |
+| :-- | :-- | :-- | :-- |
+| data-set-id | integer | The SoundCloud set ID | Yes |
+| data-do-id | string | The ID of the DOM element | Yes |
 
-**.soundcloud-play-track**
+### `.soundcloud-play-track`
 
 Toggles play/pause of the current active set.
 
-####Required Attributes
-* data-set-id
-* data-track-id
-* data-dom-id
+#### Data Attributes
+| Name | Type | Description | Required? |
+| :-- | :-- | :-- | :-- |
+| data-set-id | integer | The SoundCloud set ID | Yes |
+| data-track-id | integer | The SoundCloud track ID | Yes |
+| data-do-id | string | The ID of the DOM element | Yes |
 
-**.soundcloud-prev**
+`.soundcloud-prev`
 
 Progress the previous track on the active set.
 
-**.soundcloud-next**
+`.soundcloud-next`
 
 Progress to the next track on the active set.
 
-##Playlists
+## Playlists
 
-**.soundcloud-playlists**
+### `.soundcloud-playlists`
 
 Gets auto-populated with tracks when a set is loaded.
 
-##Progress Bars
+## Progress Bars
 
-**.soundcloud-progress**
+### `.soundcloud-progress`
 
 The progress bar parent container which contains the filler and scrubber.
 
-**.soundcloud-progress-position**
+### `.soundcloud-progress-position`
 
 The scrubber's position.
 
-#####Requirements
-* Must be a child of **.soundcloud-progress**
+**Note:** This must be a child element of `.soundcloud-progress`
 
-**.soundcloud-progress-bar**
+### `.soundcloud-progress-bar`
 
 The progress bar filler.
 
-#####Requirements
-* Must be a child of **.soundcloud-progress**
+**Note:** This must be a child element of `.soundcloud-progress`
 
-##Duration Timers
+## Duration Timers
 
-**.soundcloud-duration-elapsed**
+### `.soundcloud-duration-elapsed`
 
 Displays the elapsed time of the currently playing track.
 
-**.soundcloud-duration-remaining**
+### `.soundcloud-duration-remaining`
 
 Displays the remaining time of the currently playing track.
+
+# Changelog
+
+## 0.2.0
+
+* In development
+
+## 0.1.0
+* Initial version
